@@ -151,25 +151,44 @@ public class MainPresenter implements BaseContract.BasePresenter {
                 .subscribeWith(new DisposableSingleObserver<GooglePlace>() {
                     @Override
                     public void onSuccess(GooglePlace googlePlace) {
-                        String place = "chosen place";
-                        for(int i = 0; i < googlePlace.getResult().getAddressComponents().size(); i++) {
-                            List<String> types = googlePlace.getResult().getAddressComponents().get(i).getTypes();
-                            if (types.get(0).equals("locality") && types.get(1).equals("political")) {
-                                place = googlePlace.getResult().getAddressComponents().get(i).getShortName();
-                                break;
+                        try {
+                            boolean founded = false;
+                            String place = "chosen place";
+                            for (int i = 0; i < googlePlace.getResult().getAddressComponents().size(); i++) {
+                                List<String> types = googlePlace.getResult().getAddressComponents().get(i).getTypes();
+                                if (types.get(0).equals("locality") && types.get(1).equals("political")) {
+                                    place = googlePlace.getResult().getAddressComponents().get(i).getShortName();
+                                    founded = true;
+                                    break;
+                                }
                             }
-                            if(types.get(0).equals("administrative_area_level_1") && types.get(1).equals("political")){
-                                place = googlePlace.getResult().getAddressComponents().get(i).getShortName();
-                                break;
+                            if(!founded) {
+                                for (int i = 0; i < googlePlace.getResult().getAddressComponents().size(); i++) {
+                                    List<String> types = googlePlace.getResult().getAddressComponents().get(i).getTypes();
+                                    if (types.get(0).equals("administrative_area_level_1") && types.get(1).equals("political")) {
+                                        place = googlePlace.getResult().getAddressComponents().get(i).getShortName();
+                                        founded = true;
+                                        break;
+                                    }
+                                }
                             }
-                            if(types.get(0).equals("country") && types.get(1).equals("political")){
-                                place = googlePlace.getResult().getAddressComponents().get(i).getLongName();
-                                break;
+                            if(!founded) {
+                                for (int i = 0; i < googlePlace.getResult().getAddressComponents().size(); i++) {
+                                    List<String> types = googlePlace.getResult().getAddressComponents().get(i).getTypes();
+                                    if (types.get(0).equals("country") && types.get(1).equals("political")) {
+                                        place = googlePlace.getResult().getAddressComponents().get(i).getLongName();
+                                        break;
+                                    }
+                                }
                             }
+                            mActivity.setCity(place);
+                            mSuccessGoogleAPIRequest = true;
+                            checkRequestsSuccess();
+                        }catch (Exception c){
+                            mActivity.setCity(mActivity.getResources().getString(R.string.chosen_place));
+                            mActivity.showMessage(mActivity.getResources().getString(R.string.place_not_found));
+                            mActivity.stopRotateLoading();
                         }
-                        mActivity.setCity(place);
-                        mSuccessGoogleAPIRequest = true;
-                        checkRequestsSuccess();
                     }
                     @Override
                     public void onError(Throwable e) {
