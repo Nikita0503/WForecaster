@@ -35,7 +35,7 @@ import io.reactivex.schedulers.Schedulers;
  * Created by Nikita on 06.06.2018.
  */
 
-public class MainPresenter implements BaseContract.BasePresenter { // Забахать так чтобы пользователь мог указать кол-во дней (в запросе к API есть такая тема)
+public class MainPresenter implements BaseContract.BasePresenter {
     private boolean mSuccessOpenWeatherMapAPIRequest;
     private boolean mSuccessGoogleAPIRequest;
     private MainActivity mActivity;
