@@ -13,6 +13,7 @@ import com.example.nikita.forecastapp.model.data.OpenWeatherMap.ForecastInfo;
  */
 
 public class ForecastFragmentPagerAdapter extends FragmentStatePagerAdapter {
+    public static final int AMOUNT_OF_DAYS = 7;
     private ForecastInfo mForecastInfo;
 
     public ForecastFragmentPagerAdapter(FragmentManager fm, ForecastInfo forecastInfo) {
@@ -28,6 +29,6 @@ public class ForecastFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 7;
+        return AMOUNT_OF_DAYS;
     }
 }

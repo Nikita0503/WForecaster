@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">ForecastApp</string>
     <string name="connection_error">connection error!</string>
-    <string name="place_name_not_found">place name not found!</string>
+    <string name="place_not_found">place not found!</string>
 </resources>

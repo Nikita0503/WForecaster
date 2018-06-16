@@ -77,7 +77,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/springsteel_lig"
-        android:text="City"
+        android:text=""
         android:textColor="@color/colorLightGray"
         android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"

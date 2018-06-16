@@ -31,6 +31,7 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.ocnyang.pagetransformerhelp.transformer.CubeOutTransformer;
 import com.ocnyang.pagetransformerhelp.transformer.ScaleInOutTransformer;
+import com.valdesekamdem.library.mdtoast.MDToast;
 import com.victor.loading.rotate.RotateLoading;
 
 import butterknife.BindView;
@@ -39,7 +40,7 @@ import butterknife.OnClick;
 
 
 public class MainActivity extends AppCompatActivity implements BaseContract.BaseView, GoogleApiClient.OnConnectionFailedListener {
-    int PLACE_PICKER_REQUEST = 1;
+    public static final int PLACE_PICKER_REQUEST = 1;
     private MainPresenter mPresenter;
     private PlaceAutocompleteFragment mAutocompleteFragment;
     @BindView(R.id.viewPager)
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
     RotateLoading mRotateLoading;
     @BindView(R.id.textViewCity)
     TextView mTextViewCity;
+
     @OnClick(R.id.imageViewMarker)
     public void onClickMarker(){
         startRotateLoading();
@@ -82,12 +84,12 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
 
     @Override
     public void showMessage(String message) {
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+        MDToast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Toast.makeText(getApplicationContext(), getResources().getString(R.string.connection_error), Toast.LENGTH_SHORT).show();
+        MDToast.makeText(getApplicationContext(),  getResources().getString(R.string.connection_error), Toast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
     }
 
     @Override
@@ -99,20 +101,20 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
         }
     }
 
-    public void setPagerAdapter(PagerAdapter pagerAdapter){
-        mPager.setAdapter(pagerAdapter);
-    }
-
-    public void setCity(String city){
-        mTextViewCity.setText(city);
-    }
-
     public void startRotateLoading(){
         mRotateLoading.start();
     }
 
     public void stopRotateLoading(){
         mRotateLoading.stop();
+    }
+
+    public void setPagerAdapter(PagerAdapter pagerAdapter){
+        mPager.setAdapter(pagerAdapter);
+    }
+
+    public void setCity(String city){
+        mTextViewCity.setText(city);
     }
 
     @Override

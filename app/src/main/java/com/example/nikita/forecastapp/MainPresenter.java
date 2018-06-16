@@ -36,6 +36,8 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class MainPresenter implements BaseContract.BasePresenter { // Забахать так чтобы пользователь мог указать кол-во дней (в запросе к API есть такая тема)
+    private boolean mSuccessOpenWeatherMapAPIRequest;
+    private boolean mSuccessGoogleAPIRequest;
     private MainActivity mActivity;
     private CompositeDisposable mDisposables;
     private ForecastAPIUtils mForecastAPIUtils;
@@ -64,7 +66,8 @@ public class MainPresenter implements BaseContract.BasePresenter { // Забах
             @Override
             public void onPlaceSelected(Place place) {
                 mActivity.startRotateLoading();
-                Log.d("PLACE", place.getId());
+                mSuccessOpenWeatherMapAPIRequest = false;
+                mSuccessGoogleAPIRequest = false;
                 fetchDataByCoordinates(place.getLatLng());
                 fetchLocationByPlaceId(place.getId());
             }
@@ -83,7 +86,6 @@ public class MainPresenter implements BaseContract.BasePresenter { // Забах
                 .build();
     }
 
-
     public void fetchCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(mActivity.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -94,10 +96,14 @@ public class MainPresenter implements BaseContract.BasePresenter { // Забах
             @Override
             public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
                 try {
+                    mSuccessOpenWeatherMapAPIRequest = false;
+                    mSuccessGoogleAPIRequest = false;
                     fetchDataByCoordinates(likelyPlaces.get(0).getPlace().getLatLng());
                     fetchLocationByPlaceId(likelyPlaces.get(0).getPlace().getId());
                     likelyPlaces.release();
-                }catch (Exception c){
+                }catch (Exception e){
+                    e.printStackTrace();
+                    mActivity.showMessage(mActivity.getResources().getString(R.string.connection_error));
                     mActivity.stopRotateLoading();
                 }
             }
@@ -106,19 +112,22 @@ public class MainPresenter implements BaseContract.BasePresenter { // Забах
 
     public void fetchDataByMapData(Intent mapData){
         Place place = PlacePicker.getPlace(mapData, mActivity.getApplicationContext());
+        mSuccessOpenWeatherMapAPIRequest = false;
+        mSuccessGoogleAPIRequest = false;
         fetchDataByCoordinates(place.getLatLng());
         fetchLocationByPlaceId(place.getId());
     }
 
     public void fetchDataByCoordinates(LatLng coordinates){
-        Disposable sunInfo = mForecastAPIUtils.getDataByCoordinates(coordinates.latitude, coordinates.longitude)
+        Disposable weatherInfo = mForecastAPIUtils.getDataByCoordinates(coordinates.latitude, coordinates.longitude)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<ForecastInfo>() {
                     @Override
                     public void onSuccess(ForecastInfo forecastInfo) {
                         makePagerAdapter(forecastInfo);
-                        mActivity.stopRotateLoading();
+                        mSuccessOpenWeatherMapAPIRequest = true;
+                        checkRequestsSuccess();
                     }
                     @Override
                     public void onError(Throwable e) {
@@ -128,7 +137,7 @@ public class MainPresenter implements BaseContract.BasePresenter { // Забах
                     }
 
                 });
-        mDisposables.add(sunInfo);
+        mDisposables.add(weatherInfo);
     }
 
     public void fetchLocationByPlaceId(String placeId){
@@ -139,22 +148,30 @@ public class MainPresenter implements BaseContract.BasePresenter { // Забах
                     @Override
                     public void onSuccess(GooglePlace googlePlace) {
                         mActivity.setCity(googlePlace.getResult().getAddressComponents().get(1).getShortName());
+                        mSuccessGoogleAPIRequest = true;
+                        checkRequestsSuccess();
                     }
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        mActivity.setCity(mActivity.getResources().getString(R.string.place_name_not_found));
+                        mActivity.showMessage(mActivity.getResources().getString(R.string.place_not_found));
+                        mActivity.stopRotateLoading();
                     }
 
                 });
         mDisposables.add(placeInfo);
     }
 
+    private void checkRequestsSuccess(){
+        if(mSuccessOpenWeatherMapAPIRequest && mSuccessGoogleAPIRequest){
+            mActivity.stopRotateLoading();
+        }
+    }
+
     public void makePagerAdapter(ForecastInfo forecastInfo){
         PagerAdapter pagerAdapter = new ForecastFragmentPagerAdapter(mActivity.getSupportFragmentManager(), forecastInfo);
         mActivity.setPagerAdapter(pagerAdapter);
     }
-
 
     @Override
     public void onStop() {
