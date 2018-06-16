@@ -97,6 +97,8 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
                 mPresenter.fetchDataByMapData(data);
+            }else {
+                stopRotateLoading();
             }
         }
     }

@@ -12,6 +12,6 @@ import retrofit2.http.Query;
  */
 
 public interface GooglePlacesService {
-    @GET("/maps/api/place/details/json?key=AIzaSyBG4Kysi0h_ZsRVOtRDqituNJfoAZA-de8")
+    @GET("/maps/api/place/details/json?key=AIzaSyBG4Kysi0h_ZsRVOtRDqituNJfoAZA-de8&language=en")
     Single<GooglePlace> getDataByPlaceId(@Query("placeid") String placeId);
 }

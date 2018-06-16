@@ -25,6 +25,9 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -141,13 +144,20 @@ public class MainPresenter implements BaseContract.BasePresenter {
     }
 
     public void fetchLocationByPlaceId(String placeId){
+        Log.d("KEY", placeId);
         Disposable placeInfo = mGooglePlacesAPIUtils.getDataByPlaceId(placeId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<GooglePlace>() {
                     @Override
                     public void onSuccess(GooglePlace googlePlace) {
-                        mActivity.setCity(googlePlace.getResult().getAddressComponents().get(1).getShortName());
+                        for(int i = 0; i < googlePlace.getResult().getAddressComponents().size(); i++) {
+                            List<String> types = googlePlace.getResult().getAddressComponents().get(i).getTypes();
+                            if (types.get(0).equals("locality") && types.get(1).equals("political")) {
+                                mActivity.setCity(googlePlace.getResult().getAddressComponents().get(i).getShortName());
+                                break;
+                            }
+                        }
                         mSuccessGoogleAPIRequest = true;
                         checkRequestsSuccess();
                     }
