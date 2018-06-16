@@ -1,6 +1,6 @@
 package com.example.nikita.forecastapp;
 
-import com.example.nikita.forecastapp.model.data.ForecastInfo;
+import com.example.nikita.forecastapp.model.data.OpenWeatherMap.ForecastInfo;
 
 import io.reactivex.Single;
 import retrofit2.http.GET;

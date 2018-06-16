@@ -1,5 +1,5 @@
 
-package com.example.nikita.forecastapp.model.data;
+package com.example.nikita.forecastapp.model.data.OpenWeatherMap;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -20,7 +20,7 @@ public class ForecastInfo {
     private int cnt;
     @SerializedName("list")
     @Expose
-    private java.util.List<com.example.nikita.forecastapp.model.data.List> list = null;
+    private java.util.List<List> list = null;
 
     public City getCity() {
         return city;
@@ -54,11 +54,11 @@ public class ForecastInfo {
         this.cnt = cnt;
     }
 
-    public java.util.List<com.example.nikita.forecastapp.model.data.List> getList() {
+    public java.util.List<List> getList() {
         return list;
     }
 
-    public void setList(java.util.List<com.example.nikita.forecastapp.model.data.List> list) {
+    public void setList(java.util.List<List> list) {
         this.list = list;
     }
 

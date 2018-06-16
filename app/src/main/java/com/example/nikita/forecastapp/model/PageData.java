@@ -1,7 +1,7 @@
 package com.example.nikita.forecastapp.model;
 
 import com.example.nikita.forecastapp.R;
-import com.example.nikita.forecastapp.model.data.ForecastInfo;
+import com.example.nikita.forecastapp.model.data.OpenWeatherMap.ForecastInfo;
 
 import java.util.Date;
 
@@ -123,11 +123,6 @@ public class PageData {
                 break;
         }
         return dateStr.substring(BEGINNING_OF_DAY_NAME, END_OF_DAY_NAME) + " " + dayOfWeek;
-    }
-
-    public String getCity() {
-        String city = mForecastInfo.getCity().getName() + " " + mForecastInfo.getCity().getCountry();
-        return city;
     }
 
     public String getDescription() {

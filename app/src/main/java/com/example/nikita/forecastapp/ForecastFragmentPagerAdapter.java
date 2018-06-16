@@ -3,14 +3,10 @@ package com.example.nikita.forecastapp;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.example.nikita.forecastapp.UI.ForecastPageFragment;
 import com.example.nikita.forecastapp.model.PageData;
-import com.example.nikita.forecastapp.model.data.ForecastInfo;
-
-import java.util.Date;
+import com.example.nikita.forecastapp.model.data.OpenWeatherMap.ForecastInfo;
 
 /**
  * Created by Nikita on 08.06.2018.

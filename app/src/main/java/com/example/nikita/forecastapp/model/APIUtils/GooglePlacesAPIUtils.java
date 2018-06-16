@@ -1,6 +1,8 @@
 package com.example.nikita.forecastapp.model.APIUtils;
 
 import com.example.nikita.forecastapp.ForecastService;
+import com.example.nikita.forecastapp.GooglePlacesService;
+import com.example.nikita.forecastapp.model.data.GooglePlaces.GooglePlace;
 import com.example.nikita.forecastapp.model.data.OpenWeatherMap.ForecastInfo;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
@@ -9,18 +11,18 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by Nikita on 06.06.2018.
+ * Created by Nikita on 16.06.2018.
  */
 
-public class ForecastAPIUtils implements ForecastService {
+public class GooglePlacesAPIUtils implements GooglePlacesService{
 
-    public static final String BASE_URL = "http://api.openweathermap.org/";
+    public static final String BASE_URL = "https://maps.googleapis.com/";
 
     @Override
-    public Single<ForecastInfo> getDataByCoordinates(double lat, double lon) {
+    public Single<GooglePlace> getDataByPlaceId(String placeId) {
         Retrofit retrofit = getClient(BASE_URL);
-        ForecastService forecastService = retrofit.create(ForecastService.class);
-        return forecastService.getDataByCoordinates(lat, lon);
+        GooglePlacesService googlePlacesService = retrofit.create(GooglePlacesService.class);
+        return googlePlacesService.getDataByPlaceId(placeId);
     }
 
     public static Retrofit getClient(String baseUrl) {
@@ -31,6 +33,4 @@ public class ForecastAPIUtils implements ForecastService {
                 .build();
         return retrofit;
     }
-
-
 }

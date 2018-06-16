@@ -10,7 +10,9 @@ import android.widget.Toast;
 
 import com.example.nikita.forecastapp.UI.MainActivity;
 import com.example.nikita.forecastapp.model.APIUtils.ForecastAPIUtils;
-import com.example.nikita.forecastapp.model.data.ForecastInfo;
+import com.example.nikita.forecastapp.model.APIUtils.GooglePlacesAPIUtils;
+import com.example.nikita.forecastapp.model.data.GooglePlaces.GooglePlace;
+import com.example.nikita.forecastapp.model.data.OpenWeatherMap.ForecastInfo;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -37,11 +39,13 @@ public class MainPresenter implements BaseContract.BasePresenter { // Забах
     private MainActivity mActivity;
     private CompositeDisposable mDisposables;
     private ForecastAPIUtils mForecastAPIUtils;
+    private GooglePlacesAPIUtils mGooglePlacesAPIUtils;
     private GoogleApiClient mGoogleApiClient;
 
     public MainPresenter(MainActivity mainActivity){
         mActivity = mainActivity;
         mForecastAPIUtils = new ForecastAPIUtils();
+        mGooglePlacesAPIUtils = new GooglePlacesAPIUtils();
         mGoogleApiClient = new GoogleApiClient
                 .Builder(mActivity)
                 .addApi(Places.GEO_DATA_API)
@@ -60,7 +64,9 @@ public class MainPresenter implements BaseContract.BasePresenter { // Забах
             @Override
             public void onPlaceSelected(Place place) {
                 mActivity.startRotateLoading();
+                Log.d("PLACE", place.getId());
                 fetchDataByCoordinates(place.getLatLng());
+                fetchLocationByPlaceId(place.getId());
             }
 
             @Override
@@ -77,6 +83,33 @@ public class MainPresenter implements BaseContract.BasePresenter { // Забах
                 .build();
     }
 
+
+    public void fetchCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(mActivity.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
+                .getCurrentPlace(mGoogleApiClient, null);
+        result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
+            @Override
+            public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
+                try {
+                    fetchDataByCoordinates(likelyPlaces.get(0).getPlace().getLatLng());
+                    fetchLocationByPlaceId(likelyPlaces.get(0).getPlace().getId());
+                    likelyPlaces.release();
+                }catch (Exception c){
+                    mActivity.stopRotateLoading();
+                }
+            }
+        });
+    }
+
+    public void fetchDataByMapData(Intent mapData){
+        Place place = PlacePicker.getPlace(mapData, mActivity.getApplicationContext());
+        fetchDataByCoordinates(place.getLatLng());
+        fetchLocationByPlaceId(place.getId());
+    }
+
     public void fetchDataByCoordinates(LatLng coordinates){
         Disposable sunInfo = mForecastAPIUtils.getDataByCoordinates(coordinates.latitude, coordinates.longitude)
                 .subscribeOn(Schedulers.io())
@@ -90,7 +123,7 @@ public class MainPresenter implements BaseContract.BasePresenter { // Забах
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        Toast.makeText(mActivity.getApplicationContext(), "ERROR PRESENTER", Toast.LENGTH_SHORT).show();
+                        mActivity.showMessage(mActivity.getResources().getString(R.string.connection_error));
                         mActivity.stopRotateLoading();
                     }
 
@@ -98,30 +131,23 @@ public class MainPresenter implements BaseContract.BasePresenter { // Забах
         mDisposables.add(sunInfo);
     }
 
-    public void fetchCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(mActivity.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
-                .getCurrentPlace(mGoogleApiClient, null);
-        result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
-            @Override
-            public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
-                try {
-                    fetchDataByCoordinates(likelyPlaces.get(0).getPlace().getLatLng());
-                    likelyPlaces.release();
-                }catch (Exception c){
-                    mActivity.stopRotateLoading();
-                }
-            }
-        });
-    }
+    public void fetchLocationByPlaceId(String placeId){
+        Disposable placeInfo = mGooglePlacesAPIUtils.getDataByPlaceId(placeId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<GooglePlace>() {
+                    @Override
+                    public void onSuccess(GooglePlace googlePlace) {
+                        mActivity.setCity(googlePlace.getResult().getAddressComponents().get(1).getShortName());
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        mActivity.setCity(mActivity.getResources().getString(R.string.place_name_not_found));
+                    }
 
-    public void fetchDataByMapData(Intent mapData){
-        Place place = PlacePicker.getPlace(mapData, mActivity.getApplicationContext());
-        String toastMsg = String.format("Place: %s", place.getName());
-        Toast.makeText(mActivity.getApplicationContext(), toastMsg, Toast.LENGTH_LONG).show();
-        fetchDataByCoordinates(place.getLatLng());
+                });
+        mDisposables.add(placeInfo);
     }
 
     public void makePagerAdapter(ForecastInfo forecastInfo){

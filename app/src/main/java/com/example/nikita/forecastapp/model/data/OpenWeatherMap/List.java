@@ -1,5 +1,5 @@
 
-package com.example.nikita.forecastapp.model.data;
+package com.example.nikita.forecastapp.model.data.OpenWeatherMap;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

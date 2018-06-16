@@ -46,7 +46,8 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
     ViewPager mPager;
     @BindView(R.id.rotateLoading)
     RotateLoading mRotateLoading;
-
+    @BindView(R.id.textViewCity)
+    TextView mTextViewCity;
     @OnClick(R.id.imageViewMarker)
     public void onClickMarker(){
         startRotateLoading();
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Toast.makeText(getApplicationContext(), "connection error", Toast.LENGTH_SHORT).show(); //TODO
+        Toast.makeText(getApplicationContext(), getResources().getString(R.string.connection_error), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -100,6 +101,10 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
 
     public void setPagerAdapter(PagerAdapter pagerAdapter){
         mPager.setAdapter(pagerAdapter);
+    }
+
+    public void setCity(String city){
+        mTextViewCity.setText(city);
     }
 
     public void startRotateLoading(){

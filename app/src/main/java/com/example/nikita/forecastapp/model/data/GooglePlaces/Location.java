@@ -1,25 +1,17 @@
 
-package com.example.nikita.forecastapp.model.data;
+package com.example.nikita.forecastapp.model.data.GooglePlaces;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Coord {
+public class Location {
 
-    @SerializedName("lon")
-    @Expose
-    private double lon;
     @SerializedName("lat")
     @Expose
     private double lat;
-
-    public double getLon() {
-        return lon;
-    }
-
-    public void setLon(double lon) {
-        this.lon = lon;
-    }
+    @SerializedName("lng")
+    @Expose
+    private double lng;
 
     public double getLat() {
         return lat;
@@ -27,6 +19,14 @@ public class Coord {
 
     public void setLat(double lat) {
         this.lat = lat;
+    }
+
+    public double getLng() {
+        return lng;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
     }
 
 }
