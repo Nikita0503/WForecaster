@@ -151,13 +151,23 @@ public class MainPresenter implements BaseContract.BasePresenter {
                 .subscribeWith(new DisposableSingleObserver<GooglePlace>() {
                     @Override
                     public void onSuccess(GooglePlace googlePlace) {
+                        String place = "chosen place";
                         for(int i = 0; i < googlePlace.getResult().getAddressComponents().size(); i++) {
                             List<String> types = googlePlace.getResult().getAddressComponents().get(i).getTypes();
                             if (types.get(0).equals("locality") && types.get(1).equals("political")) {
-                                mActivity.setCity(googlePlace.getResult().getAddressComponents().get(i).getShortName());
+                                place = googlePlace.getResult().getAddressComponents().get(i).getShortName();
+                                break;
+                            }
+                            if(types.get(0).equals("administrative_area_level_1") && types.get(1).equals("political")){
+                                place = googlePlace.getResult().getAddressComponents().get(i).getShortName();
+                                break;
+                            }
+                            if(types.get(0).equals("country") && types.get(1).equals("political")){
+                                place = googlePlace.getResult().getAddressComponents().get(i).getLongName();
                                 break;
                             }
                         }
+                        mActivity.setCity(place);
                         mSuccessGoogleAPIRequest = true;
                         checkRequestsSuccess();
                     }
