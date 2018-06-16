@@ -1,4 +1,4 @@
-package com.example.nikita.forecastapp;
+package com.example.nikita.forecastapp.model;
 
 import com.example.nikita.forecastapp.model.data.OpenWeatherMap.ForecastInfo;
 

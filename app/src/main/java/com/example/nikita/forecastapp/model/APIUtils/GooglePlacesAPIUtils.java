@@ -1,9 +1,7 @@
 package com.example.nikita.forecastapp.model.APIUtils;
 
-import com.example.nikita.forecastapp.ForecastService;
-import com.example.nikita.forecastapp.GooglePlacesService;
+import com.example.nikita.forecastapp.model.GooglePlacesService;
 import com.example.nikita.forecastapp.model.data.GooglePlaces.GooglePlace;
-import com.example.nikita.forecastapp.model.data.OpenWeatherMap.ForecastInfo;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import io.reactivex.Single;
