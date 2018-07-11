@@ -10,6 +10,6 @@
         <item name="android:windowActionBarOverlay">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:fontFamily">@font/springsteel_lig</item>
     </style>
-
 </resources>

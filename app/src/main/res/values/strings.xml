@@ -1,6 +1,16 @@
 <resources>
     <string name="app_name">ForecastApp</string>
+    <string name="error">error!</string>
     <string name="connection_error">connection error!</string>
     <string name="place_not_found">place not found!</string>
     <string name="chosen_place">chosen place</string>
+    <string name="inappropriate_place">inappropriate place</string>
+    <string name="choose_place_please">choose place, please</string>
+    <string name="city_already_exist">city already exist</string>
+    <string name="city_was_successfully_added">city was successfully added</string>
+    <string name="city_was_deleted">city was deleted</string>
+    <string name="do_you_want_delete">Do you want delete the selected city?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="add">Add</string>
 </resources>

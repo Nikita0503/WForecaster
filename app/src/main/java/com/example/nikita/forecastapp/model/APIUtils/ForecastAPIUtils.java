@@ -1,6 +1,5 @@
 package com.example.nikita.forecastapp.model.APIUtils;
 
-import com.example.nikita.forecastapp.model.ForecastService;
 import com.example.nikita.forecastapp.model.data.OpenWeatherMap.ForecastInfo;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 

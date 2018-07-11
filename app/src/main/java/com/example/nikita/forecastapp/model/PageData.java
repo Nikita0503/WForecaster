@@ -42,6 +42,7 @@ public class PageData {
 
     public int getImageId() {
         int id = mForecastInfo.getList().get(mDayNumber).getWeather().get(0).getId();
+        String condition = mForecastInfo.getList().get(mDayNumber).getWeather().get(0).getDescription();
         int imageId = R.drawable.img_sun;
         if (id == ID_CLEARSKY) {
             imageId = R.drawable.img_sun;
@@ -57,7 +58,15 @@ public class PageData {
                     imageId = R.drawable.img_snow;
                     break;
                 case ID_RAIN:
-                    imageId = R.drawable.img_rain;
+                    if(condition.equals("light rain")){
+                        imageId = R.drawable.img_light_rain;
+                    }
+                    if(condition.equals("moderate rain")){
+                        imageId = R.drawable.img_rain;
+                    }
+                    if(condition.equals("heavy intensity rain")){
+                        imageId = R.drawable.img_heavy_rain;
+                    }
                     break;
                 case ID_DRIZZLE:
                     imageId = R.drawable.img_drizzle;

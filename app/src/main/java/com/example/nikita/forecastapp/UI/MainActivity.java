@@ -7,11 +7,17 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +25,8 @@ import com.example.nikita.forecastapp.BaseContract;
 import com.example.nikita.forecastapp.MainPresenter;
 import com.example.nikita.forecastapp.R;
 import com.example.nikita.forecastapp.UI.ForecastPageFragment;
+import com.example.nikita.forecastapp.model.DrawerItemClickListener;
+import com.example.nikita.forecastapp.model.data.CitiesTable;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -31,6 +39,7 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.ocnyang.pagetransformerhelp.transformer.CubeOutTransformer;
 import com.ocnyang.pagetransformerhelp.transformer.ScaleInOutTransformer;
+import com.simplealertdialog.SimpleAlertDialog;
 import com.valdesekamdem.library.mdtoast.MDToast;
 import com.victor.loading.rotate.RotateLoading;
 
@@ -39,10 +48,15 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-public class MainActivity extends AppCompatActivity implements BaseContract.BaseView, GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity implements BaseContract.BaseView, SimpleAlertDialog.OnClickListener{
     public static final int PLACE_PICKER_REQUEST = 1;
+    private String mChosenCityForDelete;
     private MainPresenter mPresenter;
     private PlaceAutocompleteFragment mAutocompleteFragment;
+    @BindView(R.id.left_drawer)
+    ListView mDrawerList;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout mDrawerLayout;
     @BindView(R.id.viewPager)
     ViewPager mPager;
     @BindView(R.id.rotateLoading)
@@ -80,16 +94,18 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
         mAutocompleteFragment.setFilter(mPresenter.getPlaceFilter());
         mAutocompleteFragment.setOnPlaceSelectedListener(mPresenter.getPlaceSelectionListener());
         mPager.setPageTransformer(true, new ScaleInOutTransformer());
+        mDrawerList.setAdapter(mPresenter.getAdapter());
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener(this, mPresenter));
+        mDrawerList.setOnItemLongClickListener(new DrawerItemClickListener(this, mPresenter));
+        getSupportLoaderManager().initLoader(0, null, mPresenter);
+        LayoutInflater inflater = getLayoutInflater();
+        View listHeaderView = inflater.inflate(R.layout.header,null, false);
+        mDrawerList.addHeaderView(listHeaderView);
     }
 
     @Override
-    public void showMessage(String message) {
-        MDToast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        MDToast.makeText(getApplicationContext(),  getResources().getString(R.string.connection_error), Toast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+    public void showMessage(MDToast message) {
+        message.show();
     }
 
     @Override
@@ -101,6 +117,22 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
                 stopRotateLoading();
             }
         }
+    }
+
+    @Override
+    public void onDialogPositiveButtonClicked(SimpleAlertDialog dialog, int requestCode, View view) {
+        if (requestCode == DrawerItemClickListener.REQUEST_CODE_REMOVE_CITY) {
+            mPresenter.removeCityFromFavourite(mChosenCityForDelete);
+        }
+    }
+
+    @Override
+    public void onDialogNegativeButtonClicked(SimpleAlertDialog dialog, int requestCode, View view) {
+        //ignore
+    }
+
+    public void setChosenCityForDelete(String city){
+        mChosenCityForDelete = city;
     }
 
     public void startRotateLoading(){
@@ -124,7 +156,6 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
         super.onStop();
         mPresenter.onStop();
     }
-
 
 
 }
